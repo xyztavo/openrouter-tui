@@ -100,8 +100,9 @@ func main() {
 		}
 		assistantText := fullAssistantResponse.String()
 
+		fmt.Print("\n\n")
 		if len(renderedOutputs) > 0 {
-			fmt.Print("\n--------\n\n")
+			fmt.Print("--------\n\n")
 		}
 		rendered, err := glamour.Render(assistantText, "dark")
 		if err != nil {
