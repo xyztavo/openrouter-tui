@@ -102,7 +102,7 @@ func main() {
 		if len(renderedOutputs) > 0 {
 			fmt.Print("\n--------\n\n")
 		}
-		rendered, err := glamour.Render(assistantText, "dark")
+		rendered, err := glamour.Render(assistantText, "light")
 		if err != nil {
 			log.Fatal(err.Error())
 		}
