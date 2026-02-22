@@ -95,6 +95,7 @@ func main() {
 			if len(response.Choices) > 0 {
 				content := response.Choices[0].Delta.Content
 				fullAssistantResponse.WriteString(content)
+				fmt.Print(content)
 			}
 		}
 		assistantText := fullAssistantResponse.String()
@@ -102,7 +103,7 @@ func main() {
 		if len(renderedOutputs) > 0 {
 			fmt.Print("\n--------\n\n")
 		}
-		rendered, err := glamour.Render(assistantText, "light")
+		rendered, err := glamour.Render(assistantText, "dark")
 		if err != nil {
 			log.Fatal(err.Error())
 		}
