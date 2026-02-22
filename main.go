@@ -36,9 +36,8 @@ func getToken() (token string, err error) {
 	if err != nil {
 		return tokenFromUser, err
 	}
-	fmt.Printf("token from env: %s", tokenFromEnv)
-	fmt.Printf("token from user: %s", tokenFromUser)
-	return token, err
+	fmt.Printf("token from user: %s\n", tokenFromUser)
+	return tokenFromUser, nil
 }
 func getMessage(messages []openrouter.ChatCompletionMessage) string {
 	reader := bufio.NewScanner(os.Stdin)
@@ -64,6 +63,8 @@ func main() {
 	systemMsg := openrouter.SystemMessage("you are a chill and cool terminal chatbot.")
 	ctx := context.Background()
 	var messages []openrouter.ChatCompletionMessage
+	var renderedOutputs []string
+	
 	for {
 		var message string
 		message = getMessage(messages)
@@ -82,8 +83,6 @@ func main() {
 		}
 
 		var fullAssistantResponse strings.Builder
-		var renderedOnce bool
-		var lastRenderLines int
 		for {
 			response, err := stream.Recv()
 			if err == io.EOF {
@@ -96,25 +95,22 @@ func main() {
 			if len(response.Choices) > 0 {
 				content := response.Choices[0].Delta.Content
 				fullAssistantResponse.WriteString(content)
-				rendered, err := glamour.Render(fullAssistantResponse.String(), "dark")
-				if err != nil {
-					log.Fatal(err.Error())
-				}
-				if renderedOnce {
-					fmt.Printf("\x1b[%dA", lastRenderLines)
-					fmt.Print("\x1b[0J")
-				}
-				fmt.Print(rendered)
-				renderedOnce = true
-				lastRenderLines = strings.Count(rendered, "\n")
-				if !strings.HasSuffix(rendered, "\n") {
-					lastRenderLines++
-				}
+				fmt.Print(content)
 			}
 		}
 		assistantText := fullAssistantResponse.String()
+		
+		if len(renderedOutputs) > 0 {
+			fmt.Print("\n--------\n\n")
+		}
+		rendered, err := glamour.Render(assistantText, "dark")
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		fmt.Print(rendered)
+		renderedOutputs = append(renderedOutputs, rendered)
+		
+		fmt.Println()
 		messages = append(messages, openrouter.AssistantMessage(assistantText))
-
-		stream.Close()
 	}
 }
