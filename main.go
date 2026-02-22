@@ -64,7 +64,7 @@ func main() {
 	ctx := context.Background()
 	var messages []openrouter.ChatCompletionMessage
 	var renderedOutputs []string
-	
+
 	for {
 		var message string
 		message = getMessage(messages)
@@ -95,11 +95,10 @@ func main() {
 			if len(response.Choices) > 0 {
 				content := response.Choices[0].Delta.Content
 				fullAssistantResponse.WriteString(content)
-				fmt.Print(content)
 			}
 		}
 		assistantText := fullAssistantResponse.String()
-		
+
 		if len(renderedOutputs) > 0 {
 			fmt.Print("\n--------\n\n")
 		}
@@ -109,7 +108,7 @@ func main() {
 		}
 		fmt.Print(rendered)
 		renderedOutputs = append(renderedOutputs, rendered)
-		
+
 		fmt.Println()
 		messages = append(messages, openrouter.AssistantMessage(assistantText))
 	}
